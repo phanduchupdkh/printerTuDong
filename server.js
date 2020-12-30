@@ -33,6 +33,13 @@ app.get('/deletebarcode', (req, res) => {
   res.send('Hello World!')
 })
 
+app.get('/deletephieukham', (req, res) => {
+  try {
+  fs.unlinkSync(PHIEUKHAM);
+  } catch (e){console.log('loi')} 
+  res.send('Hello World!')
+})
+
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
