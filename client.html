@@ -1,3 +1,4 @@
+
 <!XLSTYPE html>
 <html>
  
@@ -6,7 +7,7 @@
     <meta charset="utf-8" />
 </head>
 <div style="text-align:center">
-    <h1>Advanced PDF Printing from Javascript</h1>
+    <h1>Cài đặt máy in Thẻ khám bệnh</h1>
     <hr />
     <div>
         <div>
@@ -60,6 +61,62 @@
     <hr />
     <button type="button" onclick="print();">Print Now...</button>
 </div>
+
+<div style="text-align:center">
+    <h1>Cài đặt máy in Bill Tính tiền Thu Ngân</h1>
+    <hr />
+    <div>
+        <div>
+            <label for="txtPdfFile2">PDF File URL:</label>
+            <input type="text" name="txtPdfFile2" id="txtPdfFile2" value="http://localhost:3000/phieukham.pdf" />
+        </div>
+        <div>
+            <label for="lstPrinters2">Printers:</label>
+            <select name="lstPrinters2" id="lstPrinters2" onchange="showSelectedPrinterInfo2();" ></select>
+        </div>
+        <div>
+            <label for="lstPrinterTrays2">Supported Trays:</label>
+            <select name="lstPrinterTrays2" id="lstPrinterTrays2" ></select>
+        </div>
+        <div>
+            <label for="lstPrinterPapers2">Supported Papers:</label>
+            <select name="lstPrinterPapers2" id="lstPrinterPapers2" ></select>
+        </div>
+        <div>
+            <label for="lstPrintRotation2">Print Rotation (Clockwise):</label>
+            <select name="lstPrintRotation2" id="lstPrintRotation2" >
+                <option>None</option>
+                <option>Rot90</option>
+                <option>Rot180</option>
+                <option>Rot270</option>
+            </select>
+        </div>
+    </div>
+    <div>
+        <div>
+            <label for="txtPagesRange2">Pages Range: [e.g. 1,2,3,10-15]</label>
+            <input type="text"  id="txtPagesRange2">
+        </div>
+        <div>
+            <div >
+                <label><input id="chkPrintInReverseOrder2" type="checkbox" value="">Print In Reverse Order?</label>
+            </div>
+        </div>
+        <div>
+            <div >
+                <label><input id="chkPrintAnnotations2" type="checkbox" value="">Print Annotations? <span><em>Windows Only</em></span></label>
+            </div>
+        </div>
+        <div>
+            <div >
+                <label><input id="chkPrintAsGrayscale2" type="checkbox" value="">Print As Grayscale? <span><em>Windows Only</em></span></label>
+            </div>
+        </div>
+ 
+    </div>
+    <hr />
+    <button type="button" onclick="print2();">Print Now...</button>
+</div>
 <script src="zip.js"></script>
 <script src="zip-ext.js"></script>
 <script src="deflate.js"></script>
@@ -89,7 +146,9 @@ var clientPrinters = null;
                     options += '<option>' + clientPrinters[i].name + '</option>';
                 }
                 $('#lstPrinters').html(options);
+                $('#lstPrinters2').html(options);
                 _this.showSelectedPrinterInfo();
+                _this.showSelectedPrinterInfo2();
             });
         }
     };
@@ -137,6 +196,34 @@ var clientPrinters = null;
                  
         }
     }
+    function print2() {
+        if (jspmWSStatus()) {
+ 
+            //Create a ClientPrintJob
+            var cpj = new JSPM.ClientPrintJob();
+ 
+            //Set Printer info
+            var myPrinter = new JSPM.InstalledPrinter($('#lstPrinters2').val());
+            myPrinter.paperName = $('#lstPrinterPapers2').val();
+            myPrinter.trayName = $('#lstPrinterTrays2').val();
+                 
+            cpj.clientPrinter = myPrinter;
+ 
+            //Set PDF file
+            var my_file = new JSPM.PrintFilePDF($('#txtPdfFile2').val(), JSPM.FileSourceType.URL, 'MyFile.pdf', 1);
+            my_file.printRotation = JSPM.PrintRotation[$('#lstPrintRotation2').val()];
+            my_file.printRange = $('#txtPagesRange2').val();
+            my_file.printAnnotations = $('#chkPrintAnnotations2').prop('checked');
+            my_file.printAsGrayscale = $('#chkPrintAsGrayscale2').prop('checked');
+            my_file.printInReverseOrder = $('#chkPrintInReverseOrder2').prop('checked');
+ 
+            cpj.files.push(my_file);
+ 
+            //Send print job to printer!
+            cpj.sendToClient();
+                 
+        }
+    }
  
     function showSelectedPrinterInfo() {
         // get selected printer index
@@ -154,23 +241,47 @@ var clientPrinters = null;
         }
         $('#lstPrinterPapers').html(options);
     }
+
+    function showSelectedPrinterInfo2() {
+        // get selected printer index
+        var idx = $("#lstPrinters2")[0].selectedIndex;
+        // get supported trays
+        var options = '';
+        for (var i = 0; i < clientPrinters[idx].trays.length; i++) {
+            options += '<option>' + clientPrinters[idx].trays[i] + '</option>';
+        }
+        $('#lstPrinterTrays2').html(options);
+        // get supported papers
+        options = '';
+        for (var i = 0; i < clientPrinters[idx].papers.length; i++) {
+            options += '<option>' + clientPrinters[idx].papers[i] + '</option>';
+        }
+        $('#lstPrinterPapers2').html(options);
+    }
  
 </script>
 <script>
 var linkPDFneed = document.querySelector("#txtPdfFile")
-var myVar = setInterval(myTimer, 5000);
+var myVar = setInterval(myTimer, 500);
 
 function myTimer() {
 
 	fetch("http://localhost:3000/barcode").then(t=>{
-	if(t.status!==404) {
-	linkPDFneed.value = 'http://localhost:3000/barcode.pdf'
-	print()
-	fetch("http://localhost:3000/deletebarcode")
-}
+	   if(t.status!==404) {
+	   linkPDFneed.value = 'http://localhost:3000/barcode.pdf'
+	   print()
+	   fetch("http://localhost:3000/deletebarcode")
+        }
+    })
 
-})
+    fetch("http://localhost:3000/phieukham").then(t=>{
+       if(t.status!==404) {
+       linkPDFneed.value = 'http://localhost:3000/phieukham.pdf'
+       print2()
+       fetch("http://localhost:3000/deletephieukham")
+        }
 
+    })
 }
 
 </script>
