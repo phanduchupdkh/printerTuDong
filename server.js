@@ -15,21 +15,27 @@ app.use(express.static('public'))
 app.get('/barcode', (req, res) => {
 try {
   fs.readFileSync(BARCODE, 'utf-8')
-} catch {
+} catch (e) {
+	console.log('......................................................................................')
 res.status(404).send('Not found');
 }
   res.send('Hello World!')
 })
 
-app.get('/barcode', (req, res) => {
-
+app.get('/phieukham', (req, res) => {
+try {
+  fs.readFileSync(PHIEUKHAM, 'utf-8')
+} catch (e) {
+	console.log('......................................................................................')
+res.status(404).send('Not found');
+}
   res.send('Hello World!')
 })
 
 app.get('/deletebarcode', (req, res) => {
   try {
   fs.unlinkSync(BARCODE);
-  } catch (e){console.log('loi')} 
+  } catch (e) {console.log('loi')} 
   res.send('Hello World!')
 })
 
